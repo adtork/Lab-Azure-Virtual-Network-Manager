@@ -22,4 +22,5 @@ The goal of this Microhack is to step through some of the common configuration s
 <br>
 
 **Mesh Configuration**:
-![Full Mesh](https://user-images.githubusercontent.com/55964102/170346167-34a8cf50-5611-4b08-9884-5aed6f138c68.jpg)
+
+![Mesh Topology](https://user-images.githubusercontent.com/55964102/170347376-dbe813ab-3e5a-48dd-8ea2-730a80cc16c0.png)
