@@ -16,3 +16,7 @@ The goal of this Microhack is to step through some of the common configuration s
 ## Mesh Configuration
 
 ![Mesh Topology](https://user-images.githubusercontent.com/55964102/170347376-dbe813ab-3e5a-48dd-8ea2-730a80cc16c0.png)
+
+## Commands
+
+Currently it looks like both CLI/PS commands are incomplete for AVNM. At this time, the labs steps here will be via Azure Portal Only 
