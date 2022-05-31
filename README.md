@@ -20,3 +20,10 @@ The goal of this Microhack is to step through some of the common configuration s
 ## Commands
 
 Currently it looks like both CLI/PS commands are incomplete for AVNM. At this time, the labs steps here will be via Azure Portal Only 
+
+## Mesh
+1. Create the AVNM Instance
+![image](https://user-images.githubusercontent.com/55964102/171273823-fb3f485a-b605-42c7-9d5f-9acb5926a38f.png)
+2. Create the Network Group for AVNM
+![image](https://user-images.githubusercontent.com/55964102/171274267-7caa8991-0894-4c6f-95c7-2d7e3613ced9.png)
+3. Create the VNETs to be added to your AVNM Net Group (This part will be done via CLI)
