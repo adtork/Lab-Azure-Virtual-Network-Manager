@@ -27,3 +27,15 @@ Currently it looks like both CLI/PS commands are incomplete for AVNM. At this ti
 2. Create the Network Group for AVNM
 ![image](https://user-images.githubusercontent.com/55964102/171274267-7caa8991-0894-4c6f-95c7-2d7e3613ced9.png)
 3. Create the VNETs to be added to your AVNM Net Group (This part will be done via CLI)
+```bash
+#Parameters
+rg=avnm-lab-microhack
+loc=westus2
+
+#Create the Vnets
+az network vnet create --address-prefixes 172.16.0.0/24 -n vneta -g $rg -l $loc --subnet-name default --subnet-prefixes 172.16.0.0/27 --output none
+az network vnet create --address-prefixes 172.16.1.0/24 -n vnetb -g $rg -l $loc --subnet-name default --subnet-prefixes 172.16.1.0/27 --output none
+az network vnet create --address-prefixes 172.16.2.0/24 -n vnetc -g $rg -l $loc --subnet-name default --subnet-prefixes 172.16.2.0/27 --output none
+az network vnet create --address-prefixes 172.16.3.0/24 -n vnetd -g $rg -l $loc --subnet-name default --subnet-prefixes 172.16.3.0/27 --output none
+az network vnet create --address-prefixes 172.16.4.0/24 -n vnete -g $rg -l $loc --subnet-name default --subnet-prefixes 172.16.4.0/27 --output none
+az network vnet create --address-prefixes 172.16.5.0/24 -n vnetf -g $rg -l $loc --subnet-name default --subnet-prefixes 172.16.5.0/27 --output none
