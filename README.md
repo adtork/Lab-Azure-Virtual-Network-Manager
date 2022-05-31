@@ -49,9 +49,22 @@ az network vnet create --address-prefixes 172.16.5.0/24 -n vnetf -g $rg -l $loc 
 ![image](https://user-images.githubusercontent.com/55964102/171277993-1702cc07-f680-4c0f-b9f9-a6a199896145.png)
 6. Deploy the configuration for the network group
 ![image](https://user-images.githubusercontent.com/55964102/171278787-8d0e0d9b-90ce-41c8-8205-62c45c2e7d70.png)
-7. Deploy VMs in each VNET and see that they can ping since they are directly connected. Note, if you click on the VMs there are no peerings, but next hop via effective routes shows "connectedgroup"
+7. Deploy VMs in each VNET and see that they can ping since they are directly connected. Note, if you click on the VMs there are no peerings, but next hop via effective routes shows "connectedgroup"... This will be done via CLI.
+```bash
+#Paramaters
+vmsize=Standard_D2_v2
+username=azureuser
+password="MyP@SSword123!"
 
-
+#Create the VMs in each mesh VNET
+az vm create -n spoke1VM  -g $rg --image ubuntults --public-ip-sku Standard --size $vmsize -l $loc --subnet default --vnet-name vneta --admin-username $username --admin-password $password --no-wait
+az vm create -n spoke2VM  -g $rg --image ubuntults --public-ip-sku Standard --size $vmsize -l $loc --subnet default --vnet-name vnetb --admin-username $username --admin-password $password --no-wait
+az vm create -n spoke3VM  -g $rg --image ubuntults --public-ip-sku Standard --size $vmsize -l $loc --subnet default --vnet-name vnetc --admin-username $username --admin-password $password --no-wait
+az vm create -n spoke4VM  -g $rg --image ubuntults --public-ip-sku Standard --size $vmsize -l $loc --subnet default --vnet-name vnetd --admin-username $username --admin-password $password --no-wait
+az vm create -n branchVM  -g $rg --image ubuntults --public-ip-sku Standard --size $vmsize -l $loc --subnet default --vnet-name vnete --admin-username $username --admin-password $password --no-wait 
+az vm create -n branchVM  -g $rg --image ubuntults --public-ip-sku Standard --size $vmsize -l $loc --subnet default --vnet-name vnetf --admin-username $username --admin-password $password --no-wait
+```
+8. Test connectivity between few VNETs and check next hop via VM effective routes
 
 
 
