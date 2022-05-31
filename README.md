@@ -19,7 +19,7 @@ The goal of this Microhack is to step through some of the common configuration s
 
 ## Commands
 
-Currently it looks like both CLI/PS commands are incomplete for AVNM. At this time, the labs steps here will be via Azure Portal Only 
+Currently it looks like both CLI/PS commands are incomplete for AVNM. At this time, the labs steps here will be mostly Azure portal, with some mix of CLI.
 
 ## Mesh
 1. Create the AVNM Instance
