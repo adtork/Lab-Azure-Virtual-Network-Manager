@@ -64,7 +64,17 @@ az vm create -n spoke4VM  -g $rg --image ubuntults --public-ip-sku Standard --si
 az vm create -n spoke5VM  -g $rg --image ubuntults --public-ip-sku Standard --size $vmsize -l $loc --subnet default --vnet-name vnete --admin-username $username --admin-password $password --no-wait 
 az vm create -n spoke6VM  -g $rg --image ubuntults --public-ip-sku Standard --size $vmsize -l $loc --subnet default --vnet-name vnetf --admin-username $username --admin-password $password --no-wait
 ```
-8. Test connectivity between few VNETs and check next hop via VM effective routes
+8. Test connectivity between few VNETs and check next hop via VM effective routes. Enable serial console on the VM to quickly test bypassing NSGs.
+
+![image](https://user-images.githubusercontent.com/55964102/171300801-92e4cf00-7d93-49bc-8dd6-d3876c4f0ace.png)
+![image](https://user-images.githubusercontent.com/55964102/171300847-53cf9ea4-290c-43e9-9e8b-c130f94a15a1.png)
+
+Checking peerings and effective routes
+![image](https://user-images.githubusercontent.com/55964102/171301027-bb04299f-1dbc-447b-8c51-8e8b716cebb3.png)
+![image](https://user-images.githubusercontent.com/55964102/171301099-feeba4f3-0a89-4c1f-8dce-720147c3681e.png)
+
+## Conclusion
+When we create a mesh connected group with AVNM, all the VMs are logically grouped and they can directly talk to each other via that connected group without an actual VNET peering connection created. We can also see the next hop is type "conntectedgroup" 
 
 
 
