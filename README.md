@@ -44,4 +44,14 @@ az network vnet create --address-prefixes 172.16.5.0/24 -n vnetf -g $rg -l $loc 
 ![image](https://user-images.githubusercontent.com/55964102/171277106-dc058d99-4334-41ff-ab2c-11e479ca0273.png)
 ![image](https://user-images.githubusercontent.com/55964102/171277255-5dd6039e-abac-4de8-90d6-693c7b4e2fe3.png)
 ![image](https://user-images.githubusercontent.com/55964102/171277338-aad243b3-b704-4bfb-9997-750a58fc0843.png)
+5. Create the connectivity config for the network group
+![image](https://user-images.githubusercontent.com/55964102/171277786-d719748b-8c63-4f21-892f-ae6a35eac17d.png)
+![image](https://user-images.githubusercontent.com/55964102/171277993-1702cc07-f680-4c0f-b9f9-a6a199896145.png)
+6. Deploy the configuration for the network group
+![image](https://user-images.githubusercontent.com/55964102/171278787-8d0e0d9b-90ce-41c8-8205-62c45c2e7d70.png)
+7. Deploy VMs in each VNET and see that they can ping since they are directly connected. Note, if you click on the VMs there are no peerings, but next hop via effective routes shows "connectedgroup"
+
+
+
+
 
