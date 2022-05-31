@@ -39,3 +39,9 @@ az network vnet create --address-prefixes 172.16.2.0/24 -n vnetc -g $rg -l $loc 
 az network vnet create --address-prefixes 172.16.3.0/24 -n vnetd -g $rg -l $loc --subnet-name default --subnet-prefixes 172.16.3.0/27 --output none
 az network vnet create --address-prefixes 172.16.4.0/24 -n vnete -g $rg -l $loc --subnet-name default --subnet-prefixes 172.16.4.0/27 --output none
 az network vnet create --address-prefixes 172.16.5.0/24 -n vnetf -g $rg -l $loc --subnet-name default --subnet-prefixes 172.16.5.0/27 --output none
+```
+4. Add the Vnets to the network group
+![image](https://user-images.githubusercontent.com/55964102/171277106-dc058d99-4334-41ff-ab2c-11e479ca0273.png)
+![image](https://user-images.githubusercontent.com/55964102/171277255-5dd6039e-abac-4de8-90d6-693c7b4e2fe3.png)
+![image](https://user-images.githubusercontent.com/55964102/171277338-aad243b3-b704-4bfb-9997-750a58fc0843.png)
+
