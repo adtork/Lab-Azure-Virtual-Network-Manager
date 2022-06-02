@@ -23,11 +23,55 @@ The goal of this Microhack is to step through some of the common configuration s
 #Parameters
 rg=avnm-lab-microhack
 loc=westus2
+avnmname=myavnm
+avnmnetgroup=myavnmgroup
+subid=$(az account show --query 'id' -o tsv)
+
+#List current default subscription you want to use for AVNM
+az account show --query id --output tsv
+
+#Create AVNM Resource Group
+az group create -n $rg -l $loc --output none
+
+#Create the AVNM instance
+az network manager create --name $avnmname \
+    --location $loc \
+    --description "Network Manager for AVNM Microhack" \
+    --display-name "myavnm" \
+    --scope-accesses "SecurityAdmin" "Connectivity" \
+    --network-manager-scopes subscriptions="/subscriptions/$subid" \
+    --resource-group $rg \
+    --output none
+    
+#Create Network Group for AVNM
+az network manager group create --name $avnmnetgroup \
+    --network-manager-name $avnmname \
+    --description "AVNM Microhack Network Group" \
+    --display-name $avnmnetgroup \
+    --member-type "Microsoft.Network/virtualNetworks" \
+    --resource-group $rg \
+    --output none
+   
+#Create the VNETs for the network group 
+az network vnet create --address-prefixes 172.16.0.0/24 -n vneta -g $rg -l $loc --subnet-name default --subnet-prefixes 172.16.0.0/27 --output none
+az network vnet create --address-prefixes 172.16.1.0/24 -n vnetb -g $rg -l $loc --subnet-name default --subnet-prefixes 172.16.1.0/27 --output none
+az network vnet create --address-prefixes 172.16.2.0/24 -n vnetc -g $rg -l $loc --subnet-name default --subnet-prefixes 172.16.2.0/27 --output none
+az network vnet create --address-prefixes 172.16.3.0/24 -n vnetd -g $rg -l $loc --subnet-name default --subnet-prefixes 172.16.3.0/27 --output none
+az network vnet create --address-prefixes 172.16.4.0/24 -n vnete -g $rg -l $loc --subnet-name default --subnet-prefixes 172.16.4.0/27 --output none
+az network vnet create --address-prefixes 172.16.5.0/24 -n vnetf -g $rg -l $loc --subnet-name default --subnet-prefixes 172.16.5.0/27 --output none   
+
+#Add the VNETs statically to the network group. For simplicty, repeat this for the other 5 VNETs and replace the variables for each vnet
+vneta=$(az network vnet show -g $rg -n vneta --query id -o tsv) #Do the same for vnetb-vnetf, so that all six vnets are added statically 
+az network manager group static-member create --network-group-name $avnmnetgroup \
+    --network-manager-name $avnmname \
+    --resource-group $rg \
+    --static-member-name "vneta" \
+    --resource-id=$vneta \
+    --output none
+    
+   
 
 
-
-## Conclusion
-When we create a mesh connected group with AVNM, all the VMs are logically grouped and they can directly talk to each other via that connected group without an actual VNET peering connection created. We can also see the next hop is type "conntectedgroup" 
 
 
 
