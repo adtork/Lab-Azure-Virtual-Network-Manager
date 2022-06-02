@@ -168,4 +168,4 @@ We can see creating a mesh with AVNM with our six VNETs, we were able to logical
 
 
 ## Commmands
-This section assumes you used the same paramaters from previous mesh section. If you deleted, re-create the same parmaters again. We will start off with creating the connected groups for Hub+Spoke for directly connected and non connected. Then, we will add our new VNETs in question, followed by creating the configurations and applying the configurations. Finally, we will test connectivity from the connected group and non connnected group portion of Hub+Spoke.
+This section assumes you kept the resource group and AVNM instance previously from Mesh configuration. If you deleted, re-create those two services again. We will start off with creating the new network groups for Hub+Spoke for "directly connected" and non bi directional peering. Then, we will add our new VNETs in question to each network group, followed by creating the configurations and applying the configurations for each. Finally, we will create the new VMs and test connectivity within the hub and spoke for directly connected and bi directional peered VMs and check the next hops.
