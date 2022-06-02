@@ -81,10 +81,10 @@ az network manager connect-config create --configuration-name "Meshconnectivityc
     --output none
     
 #Apply the configuration config
-#Kudos to Bruce Cosden and Daniel Mauser. At this time, CLI commands not available so REST API call needed to apply configuration
+#Kudos to Bruce Cosden and Daniel Mauser. At this time, CLI commands not available so REST API call needed to apply configuration in CLI
 config=$(az network manager connect-config show --configuration-name 'Meshconnectivityconfig' -g $rg -n $avnmname --query 'id' -o tsv)
 subid=$(az account show --query 'id' -o tsv)
-url='https://management.azure.com/subscriptions/'$subid'/resourceGroups/'$mgmtrg'/providers/Microsoft.Network/networkManagers/avnm-mgmt/commit?api-version=2021-02-01-preview'
+url='https://management.azure.com/subscriptions/'$subid'/resourceGroups/'$rg'/providers/Microsoft.Network/networkManagers/'$avnmname'/commit?api-version=2021-02-01-preview'
 json='{
   "targetLocations": [
     "'$loc'"
@@ -94,6 +94,7 @@ json='{
   ],
   "commitType": "Connectivity"
 }'
+
 az rest --method POST \
     --url $url \
     --body "$json" \
