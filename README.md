@@ -98,8 +98,21 @@ json='{
 az rest --method POST \
     --url $url \
     --body "$json" \
-    --output none   
+    --output none
+    
+#Create the VMs in each VNET
+#Once created enable serial console on each VM to test connectivity between each.
 
+vmsize=Standard_D2_v2
+username=azureuser
+password="MyP@SSword123!"
+
+az vm create -n vnetaVM  -g $rg --image ubuntults --public-ip-sku Standard --size $vmsize -l $loc --subnet default --vnet-name vneta --admin-username $username --admin-password $password --no-wait
+az vm create -n vnetbVM  -g $rg --image ubuntults --public-ip-sku Standard --size $vmsize -l $loc --subnet default --vnet-name vnetb --admin-username $username --admin-password $password --no-wait
+az vm create -n vnetcVM  -g $rg --image ubuntults --public-ip-sku Standard --size $vmsize -l $loc --subnet default --vnet-name vnetc --admin-username $username --admin-password $password --no-wait
+az vm create -n vnetdVM  -g $rg --image ubuntults --public-ip-sku Standard --size $vmsize -l $loc --subnet default --vnet-name vnetd --admin-username $username --admin-password $password --no-wait
+az vm create -n vneteVM  -g $rg --image ubuntults --public-ip-sku Standard --size $vmsize -l $loc --subnet default --vnet-name vnete --admin-username $username --admin-password $password --no-wait 
+az vm create -n vnetfVM  -g $rg --image ubuntults --public-ip-sku Standard --size $vmsize -l $loc --subnet default --vnet-name vnetf --admin-username $username --admin-password $password --no-wait
 
 
 
