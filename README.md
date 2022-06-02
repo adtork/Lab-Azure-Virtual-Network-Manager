@@ -161,4 +161,4 @@ PING 172.16.2.4 (172.16.2.4) 56(84) bytes of data.
 ```
                              
 ## Conclusion
-We can see creating a mesh with AVNM with our six VNETs, we were able to logically group them, apply connectivty and security policy and ping the VMs as if they were peered directly using VNET peering. As we checked via CLI or the UI, there is actually no peering listed direcly on the Vnets. We can also see, AVNM creates a new next hop type as "connectedgroup" which is a new next hop type for this Azure service. Under the hood, there is liekly Vnet peering here that is not displayed in the portal.
+We can see creating a mesh with AVNM with our six VNETs, we were able to logically group them, apply connectivty and security policy and ping the VMs as if they were peered directly using VNET peering. As we checked via CLI or the UI, there is actually no peering listed direcly on the Vnets. We can also see, AVNM creates a new next hop type as "connectedgroup" which is a new next hop type for this Azure service. Under the hood, there is likely Vnet peering here that is not displayed in the portal.
