@@ -114,6 +114,52 @@ az vm create -n vnetdVM  -g $rg --image ubuntults --public-ip-sku Standard --siz
 az vm create -n vneteVM  -g $rg --image ubuntults --public-ip-sku Standard --size $vmsize -l $loc --subnet default --vnet-name vnete --admin-username $username --admin-password $password --no-wait 
 az vm create -n vnetfVM  -g $rg --image ubuntults --public-ip-sku Standard --size $vmsize -l $loc --subnet default --vnet-name vnetf --admin-username $username --admin-password $password --no-wait
 
+#Check the effective routes on the NIC to confirm next HOP via CLI or UI. Replace with your VM nic name!
+az network nic show-effective-route-table -n "vnetaVMVMNic" -g $rg
+{
+      "addressPrefix": [
+        "172.16.5.0/24",
+        "172.16.4.0/24",
+        "172.16.3.0/24",
+        "172.16.2.0/24",
+        "172.16.1.0/24"
+      ],
+      "destinationServiceTags": [],
+      "disableBgpRoutePropagation": false,
+      "hasBgpOverride": false,
+      "name": null,
+      "nextHopIpAddress": [],
+      "nextHopType": "ConnectedGroup",
+      "source": "Default",
+      "state": "Active",
+      "tagMap": {}
+    },
+#Notice the next HOP type for our destination VNETs is "ConnectedGroup"
 
+#Check to see if there are any VNET Peerings for our AVNM Vnets
+az network vnet peering list -g --vnet-name vneta
+# The value will be null
 
+#Finally see that you can ping from say vneta to vnetb and from vneta to vnetc direcly from serial console
+
+azureuser@vnetaVM:~$ ping 172.16.1.4
+PING 172.16.1.4 (172.16.1.4) 56(84) bytes of data.
+64 bytes from 172.16.1.4: icmp_seq=1 ttl=64 time=2.65 ms
+64 bytes from 172.16.1.4: icmp_seq=2 ttl=64 time=1.01 ms
+64 bytes from 172.16.1.4: icmp_seq=3 ttl=64 time=1.00 ms
+64 bytes from 172.16.1.4: icmp_seq=4 ttl=64 time=1.59 ms
+^C
+--- 172.16.1.4 ping statistics ---
+4 packets transmitted, 4 received, 0% packet loss, time 3004ms
+rtt min/avg/max/mdev = 1.008/1.569/2.655/0.671 ms
+azureuser@vnetaVM:~$ ping 172.16.2.4
+PING 172.16.2.4 (172.16.2.4) 56(84) bytes of data.
+64 bytes from 172.16.2.4: icmp_seq=1 ttl=64 time=2.53 ms
+64 bytes from 172.16.2.4: icmp_seq=2 ttl=64 time=0.955 ms
+64 bytes from 172.16.2.4: icmp_seq=3 ttl=64 time=1.07 ms
+64 bytes from 172.16.2.4: icmp_seq=4 ttl=64 time=0.953 ms
+```
+                             
+## Conclusion
+We can see creating a mesh with AVNM with our six VNETs, we were able to logically group them, apply connectivty and security policy and ping the VMs as if they were peered directly using VNET peering. We can also see, AVNM creates a new next hop type as "connectedgroup" which will get plumbed in VFP of the VMs added to that network group for directly connected VMs. In the next scenario, we will look at doing a simmilar topology for Hub+Spoke and breaking down the VNETs with connected vs non connected VMs.
 
