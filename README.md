@@ -69,6 +69,8 @@ az network manager group static-member create --network-group-name $avnmnetgroup
     --resource-id=$vneta \
     --output none
     
+#Create the configuration for the network group
+    
    
 
 
