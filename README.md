@@ -7,7 +7,7 @@ AVNM in a nutshell is the ability to quickly mangage networks at scale within a 
 
 ## Goals
 
-The goal of this Microhack is to step through some of the common configuration scnearios that AVNM provides and see how that affects not only the topology behavior, but also security and resources inside those VNETs. This Microhack will continue to be updated as more scenarios become available. We will start off with stepping through three scenarios:
+The goal of this Microhack is to step through some of the common configuration scnearios that AVNM provides and see how that affects not only the topology behavior, but also security and resources inside those VNETs. This Microhack will continue to be updated as more scenarios become available. The username for all vms is azureuser and passowrd is MyP@SSword123! The lab does not cover enabling serial console to test connectivity between VMs.  We will start off with stepping through three scenarios:
 
 1. Mesh Configuration
 2. Hub+Spoke Configuration and seperating that out with connected groups
