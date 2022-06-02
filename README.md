@@ -70,8 +70,34 @@ az network manager group static-member create --network-group-name $avnmnetgroup
     --output none
     
 #Create the configuration for the network group
+netgroup=$(az network manager group show --network-group-name $avnmnetgroup --network-manager-name $avnmname --resource-group $rg --query 'id' -o tsv)
+az network manager connect-config create --configuration-name "Meshconnectivityconfig" \
+    --description "Mesh config for AVNM Microhack" \
+    --applies-to-groups group-Connectivity=DirectlyConnected network-group-id=$netgroup
+    --connectivity-topology "Mesh" \
+    --display-name "Mesh Connectivity" \
+    --network-manager-name $avnmname \
+    --resource-group $rg \
+    --output none
     
-   
+#Apply the configuration config
+#Kudos to Bruce Cosden and Daniel Mauser. At this time, CLI commands not available so REST API call needed to apply configuration
+config=$(az network manager connect-config show --configuration-name 'Meshconnectivityconfig' -g $rg -n $avnmname --query 'id' -o tsv)
+subid=$(az account show --query 'id' -o tsv)
+url='https://management.azure.com/subscriptions/'$subid'/resourceGroups/'$mgmtrg'/providers/Microsoft.Network/networkManagers/avnm-mgmt/commit?api-version=2021-02-01-preview'
+json='{
+  "targetLocations": [
+    "'$loc'"
+  ],
+  "configurationIds": [
+    "'$config'"
+  ],
+  "commitType": "Connectivity"
+}'
+az rest --method POST \
+    --url $url \
+    --body "$json" \
+    --output none   
 
 
 
