@@ -165,3 +165,6 @@ We can see creating a mesh with AVNM with our six VNETs, we were able to logical
 
 ## Hub and Spoke Topology
 ![image](https://user-images.githubusercontent.com/55964102/171701529-a261b1c5-6783-4a88-bed4-16e87cfb17cb.png)
+
+## Commmands
+This section assumes you used the same paramaters from previous mesh section. If you deleted, re-create the same parmaters again. We will start off with creating the connected groups for Hub+Spoke for directly connected and non connected. Then, we will add our new VNETs in question, followed by creating the configurations and applying the configurations. Finally, we will test connectivity from the connected group and non connnected group portion of Hub+Spoke.
