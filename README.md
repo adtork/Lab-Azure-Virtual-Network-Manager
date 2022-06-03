@@ -169,3 +169,126 @@ We can see creating a mesh with AVNM with our six VNETs, we were able to logical
 
 ## Commmands
 This section assumes you kept the resource group and AVNM instance previously from Mesh configuration. If you deleted, re-create those two services again. We will start off with creating the new network groups for Hub+Spoke for "directly connected" and non bi directional peering. Then, we will add our new VNETs in question to each network group, followed by creating the configurations and applying the configurations for each. Finally, we will create the new VMs and test connectivity within the hub and spoke for directly connected and bi directional peered VMs and check the next hops.
+
+```bash
+#Pasting same paramaters again from above just in case
+rg=avnm-lab-microhack
+loc=westus2
+avnmname=myavnm
+avnmnetgroup=myavnmgroup
+
+#Create the network manager in Hub+Spoke for connected group, aka connected mesh
+az network manager group create --name "hubspokedirect" \
+    --network-manager-name $avnmname \
+    --description "network group for direct connect" \
+    --display-name "hubspokedirect" \
+    --member-type "Microsoft.Network/virtualNetworks" \
+    --resource-group $rg \
+    --output none
+    
+#Create the network manager in Hub+Spoke for bi-directional peering only
+az network manager group create --name "hubspoke" \
+    --network-manager-name $avnmname \
+    --description "network group for hub & spoke" \
+    --display-name "hubspoke" \
+    --member-type "Microsoft.Network/virtualNetworks" \
+    --resource-group $rg \
+    --output none
+    
+#Create the vNets for each
+az network vnet create --address-prefixes 172.16.6.0/24 -n vnetG -g $rg -l $loc --subnet-name default --subnet-prefixes 172.16.6.0/27 --output none
+az network vnet create --address-prefixes 172.16.7.0/24 -n vnetH -g $rg -l $loc --subnet-name default --subnet-prefixes 172.16.7.0/27 --output none
+az network vnet create --address-prefixes 172.16.8.0/24 -n vnetI -g $rg -l $loc --subnet-name default --subnet-prefixes 172.16.8.0/27 --output none
+az network vnet create --address-prefixes 172.16.9.0/24 -n vnetJ -g $rg -l $loc --subnet-name default --subnet-prefixes 172.16.9.0/27 --output none
+az network vnet create --address-prefixes 172.16.10.0/24 -n vnetK -g $rg -l $loc --subnet-name default --subnet-prefixes 172.16.10.0/27 --output none
+
+#Add the static vNETs for bi-directional peering and direct connect (mesh) for Hub+Spoke
+
+#For hub+Spoke
+vnetH=$(az network vnet show -g $rg -n vnetH --query id -o tsv) #repeat same steps for vnetI
+az network manager group static-member create --network-group-name hubspoke \
+    --network-manager-name $avnmname \
+    --resource-group $rg \
+    --static-member-name "vnetH" \
+    --resource-id=$vnetH \
+    --output none
+    
+#For direct peering
+vnetJ=$(az network vnet show -g $rg -n vnetJ --query id -o tsv) #repeat same steps for vnetK
+az network manager group static-member create --network-group-name "hubspokedirect" \
+    --network-manager-name $avnmname \
+    --resource-group $rg \
+    --static-member-name "vnetJ" \
+    --resource-id=$vnetJ \
+    --output none
+    
+#Create the configs for each one for hub+Spoke and the other for Hub+Spoke with direct peering
+hubVnet=$(az network vnet show -g $rg -n vnetG --query 'id' -o tsv)
+groupid=$(az network manager group show --network-group-name "hubspokedirect" --network-manager-name $avnmname --resource-group $rg --query 'id' -o tsv)
+az network manager connect-config create --configuration-name "HubSpokeConnectivityConfig" \
+    --description "avnm microhack hub and spoke direct" \
+    --applies-to-groups group-Connectivity=DirectlyConnected network-group-id=$groupid
+    --connectivity-topology "HubAndSpoke" \
+    --display-name "microhack hub and spoke direct" \
+    --hub resource-id=$hubVnet resource-type="Microsoft.Network/virtualNetworks" \
+    --network-manager-name $avnmname \
+    --resource-group $rg \
+    --output none
+    
+hubVnet=$(az network vnet show -g $rg -n vnetG --query 'id' -o tsv)
+groupid=$(az network manager group show --network-group-name "hubspoke" --network-manager-name $avnmname --resource-group $rg --query 'id' -o tsv)
+az network manager connect-config create --configuration-name "HubSpokeConnectivityConfig-nondirect" \
+    --description "avnm microhack hub and spoke" \
+    --applies-to-groups group network-group-id=$groupid 
+    --connectivity-topology "HubAndSpoke" \
+    --display-name "microhack hub and spoke" \
+    --hub resource-id=$hubVnet resource-type="Microsoft.Network/virtualNetworks" \
+    --network-manager-name $avnmname \
+    --resource-group $rg \
+    --output none
+    
+#Apply the configs for each
+conf=$(az network manager connect-config show --configuration-name 'HubSpokeConnectivityConfig' -g $rg -n $avnmname --query 'id' -o tsv)
+subid=$(az account show --query 'id' -o tsv)
+url='https://management.azure.com/subscriptions/'$subid'/resourceGroups/'$rg'/providers/Microsoft.Network/networkManagers/'$avnmname'/commit?api-version=2021-02-01-preview'
+json='{
+  "targetLocations": [
+    "'$loc'"
+  ],
+  "configurationIds": [
+    "'$conf'"
+  ],
+  "commitType": "Connectivity"
+}'
+
+az rest --method POST \
+    --url $url \
+    --body "$json" \
+    --output none
+    
+confnondirect=$(az network manager connect-config show --configuration-name 'HubSpokeConnectivityConfig-nondirect' -g $rg -n $avnmname --query 'id' -o tsv)
+subid=$(az account show --query 'id' -o tsv)
+url='https://management.azure.com/subscriptions/'$subid'/resourceGroups/'$rg'/providers/Microsoft.Network/networkManagers/'$avnmname'/commit?api-version=2021-02-01-preview'
+json='{
+  "targetLocations": [
+    "'$loc'"
+  ],
+  "configurationIds": [
+    "'$confnondirect'"
+  ],
+  "commitType": "Connectivity"
+}'
+
+az rest --method POST \
+    --url $url \
+    --body "$json" \
+    --output none
+    
+#Create the VMs in the vNETS for testing
+az vm create -n vnetGVM  -g $rg --image ubuntults --public-ip-sku Standard --size $vmsize -l $loc --subnet default --vnet-name vnetG --admin-username $username --admin-password $password --no-wait
+az vm create -n vnetHVM  -g $rg --image ubuntults --public-ip-sku Standard --size $vmsize -l $loc --subnet default --vnet-name vnetH --admin-username $username --admin-password $password --no-wait
+az vm create -n vnetIVM  -g $rg --image ubuntults --public-ip-sku Standard --size $vmsize -l $loc --subnet default --vnet-name vnetI --admin-username $username --admin-password $password --no-wait
+az vm create -n vnetJVM  -g $rg --image ubuntults --public-ip-sku Standard --size $vmsize -l $loc --subnet default --vnet-name vnetJ --admin-username $username --admin-password $password --no-wait
+az vm create -n vnetKVM  -g $rg --image ubuntults --public-ip-sku Standard --size $vmsize -l $loc --subnet default --vnet-name vnetK --admin-username $username --admin-password $password --no-wait
+
+
