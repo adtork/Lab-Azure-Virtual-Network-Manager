@@ -290,5 +290,8 @@ az vm create -n vnetHVM  -g $rg --image ubuntults --public-ip-sku Standard --siz
 az vm create -n vnetIVM  -g $rg --image ubuntults --public-ip-sku Standard --size $vmsize -l $loc --subnet default --vnet-name vnetI --admin-username $username --admin-password $password --no-wait
 az vm create -n vnetJVM  -g $rg --image ubuntults --public-ip-sku Standard --size $vmsize -l $loc --subnet default --vnet-name vnetJ --admin-username $username --admin-password $password --no-wait
 az vm create -n vnetKVM  -g $rg --image ubuntults --public-ip-sku Standard --size $vmsize -l $loc --subnet default --vnet-name vnetK --admin-username $username --admin-password $password --no-wait
+```
 
+## Conclusion
+From what it appears, AVNM only applies the lastest config that you created and honors that. The portal also only shows one config applied at a time for an AVNM instance. So, if you apply the direct connect mesh within hub+Spoke, it should honor the above diagram. However, if you apply the config for bi-directional peering, it seems to change ALL the vms to have bi-directioanl peering only! You have to wait at least 15-20 minutes per the docs for the config to take affect. In checking the VM effective routes and next hops, VMs within the direct connect "J and K" will have next hop "connected group". However, VMs "H and I" will only have VNET peering as next HOP, which honors the diagram fro this lab because they are not in a direct connect model. Our hub VNET, in this case, "VNET G" will have VNET peering as next HOP. VNETG should be able to ping all VMs, however VMs "H and I" cannot ping VMs "J and K" because they are not in a direct peering mesh, aka connected group. 
 
