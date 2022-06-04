@@ -247,25 +247,8 @@ az network manager connect-config create --configuration-name "HubSpokeConnectiv
     --resource-group $rg \
     --output none
     
-#Apply the configs for each
+#Apply the config, referencing both config groups
 conf=$(az network manager connect-config show --configuration-name 'HubSpokeConnectivityConfig' -g $rg -n $avnmname --query 'id' -o tsv)
-subid=$(az account show --query 'id' -o tsv)
-url='https://management.azure.com/subscriptions/'$subid'/resourceGroups/'$rg'/providers/Microsoft.Network/networkManagers/'$avnmname'/commit?api-version=2021-02-01-preview'
-json='{
-  "targetLocations": [
-    "'$loc'"
-  ],
-  "configurationIds": [
-    "'$conf'"
-  ],
-  "commitType": "Connectivity"
-}'
-
-az rest --method POST \
-    --url $url \
-    --body "$json" \
-    --output none
-    
 confnondirect=$(az network manager connect-config show --configuration-name 'HubSpokeConnectivityConfig-nondirect' -g $rg -n $avnmname --query 'id' -o tsv)
 subid=$(az account show --query 'id' -o tsv)
 url='https://management.azure.com/subscriptions/'$subid'/resourceGroups/'$rg'/providers/Microsoft.Network/networkManagers/'$avnmname'/commit?api-version=2021-02-01-preview'
@@ -274,6 +257,7 @@ json='{
     "'$loc'"
   ],
   "configurationIds": [
+    "'$conf'",
     "'$confnondirect'"
   ],
   "commitType": "Connectivity"
@@ -284,6 +268,7 @@ az rest --method POST \
     --body "$json" \
     --output none
     
+
 #Create the VMs in the vNETS for testing
 az vm create -n vnetGVM  -g $rg --image ubuntults --public-ip-sku Standard --size $vmsize -l $loc --subnet default --vnet-name vnetG --admin-username $username --admin-password $password --no-wait
 az vm create -n vnetHVM  -g $rg --image ubuntults --public-ip-sku Standard --size $vmsize -l $loc --subnet default --vnet-name vnetH --admin-username $username --admin-password $password --no-wait
@@ -293,4 +278,4 @@ az vm create -n vnetKVM  -g $rg --image ubuntults --public-ip-sku Standard --siz
 ```
 
 ## Conclusion
-In progress..
+From this Hub and Spoke section, we can see that we were able to create a bi-diretional peering with two Vnets (H and I) and direct mesh peering with Vnets (J and K). Vnet G is this scenario is our hub. For Vnets H and I, those are peered our hub VNET and can only ping the hub, but not each other. For Vnets J and K, since those are part of the connected group, they can ping each other and also the hub. When we check the next hop affected routes, we can see Vnets H and I have  Vnet peering listed as next hop, and Vnets J and K have "conneted group", which matches our topology. For the next section, we are going to explore the hybrid hub+spoke scenario. 
