@@ -1,4 +1,4 @@
-## Azure-Virtual-Network-Manager Microhack
+## Azure-Virtual-Network-Manager Lab
 
 
 ## Introduction
