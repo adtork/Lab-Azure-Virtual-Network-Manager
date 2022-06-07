@@ -11,7 +11,7 @@ The goal of this Microhack is to step through some of the common configuration s
 
 1. Mesh Configuration
 2. Hub+Spoke Configuration and seperating that out with connected groups
-3. Hybrid Hub+Spoke (Multiple connected Hub+Spoke groups)
+3. Hub+Spoke Global Mesh Configuration
 
 ## Mesh Configuration
 
