@@ -163,7 +163,7 @@ PING 172.16.2.4 (172.16.2.4) 56(84) bytes of data.
 ## Conclusion
 We can see creating a mesh with AVNM with our six VNETs, we were able to logically group them, apply connectivty and security policy and ping the VMs as if they were peered directly using VNET peering. As we checked via CLI or the UI, there is actually no peering listed direcly on the Vnets. We can also see, AVNM creates a new next hop type as "connectedgroup" which is a new next hop type for this Azure service. Under the hood, there is likely Vnet peering here that is not displayed in the portal.
 
-## Hub and Spoke Topology
+## Hub and Spoke Configuration
 ![image](https://user-images.githubusercontent.com/55964102/171702994-0ea3d8c6-1033-4285-95d6-bb16911a0116.png)
 
 
@@ -279,3 +279,6 @@ az vm create -n vnetKVM  -g $rg --image ubuntults --public-ip-sku Standard --siz
 
 ## Conclusion
 From this Hub and Spoke section, we can see that we were able to create a bi-diretional peering with Vnets (H and I) and direct mesh peering with Vnets (J and K). Vnet G in this scenario is our hub. For Vnets H and I, those are bi directionaly peered to our hub VNET and those VMs can only ping the hub VM, but not each other since they are non-connected group. For Vnets J and K, since those are part of the connected group, those VMs can ping each other and also ping the hub VM. When we check the next hop affected routes on our VMs, we can see VMs H and I have "Vnet peering" listed as next hop, and VMs J and K have "conneted group", which matches our topology. For VMG, that has peering to all the Vnets in question since its our hub. For the next section, we are going to explore a hybrid hub+spoke scenario. 
+
+## Hub and Spoke Global Mesh
+In this next scenario, we are going to expand off the previosuly created Hub and Spoke and global mesh that with a new Hub and Spoke in a different regions (WestUS2 with EastUS2). So, we will have two hub and spokes globally peered cross region. We will add the new location and create the network group and add all the VMs including the previous hub and spoke to the new network group. Then, we will create the configuration, apply the configuration and test the connectivty and next hops.
