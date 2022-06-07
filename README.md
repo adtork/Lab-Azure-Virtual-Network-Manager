@@ -1,4 +1,4 @@
-## Azure-Virtual-Network-Manager Lab
+## Lab: Azure-Virtual-Network-Manager
 
 
 ## Introduction
