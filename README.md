@@ -14,7 +14,6 @@ The goal of this Microhack is to step through some of the common configuration s
 3. Hub+Spoke Global Mesh Configuration
 
 ## Mesh Configuration
-In this config, we are going to create a simple mesh topology where every VNET can talk. The VMs will have direct connecitvty to each other and we will explore the next hops and test the connectivity amongst the mesh.
 
 ![Mesh Topology](https://user-images.githubusercontent.com/55964102/170347376-dbe813ab-3e5a-48dd-8ea2-730a80cc16c0.png)
 
@@ -282,4 +281,5 @@ az vm create -n vnetKVM  -g $rg --image ubuntults --public-ip-sku Standard --siz
 From this Hub and Spoke section, we can see that we were able to create a bi-diretional peering with Vnets (H and I) and direct mesh peering with Vnets (J and K). Vnet G in this scenario is our hub. For Vnets H and I, those are bi directionaly peered to our hub VNET and those VMs can only ping the hub VM, but not each other since they are non-connected group. For Vnets J and K, since those are part of the connected group, those VMs can ping each other and also ping the hub VM. When we check the next hop affected routes on our VMs, we can see VMs H and I have "Vnet peering" listed as next hop, and VMs J and K have "conneted group", which matches our topology. For VMG, that has peering to all the Vnets in question since its our hub. For the next section, we are going to explore a hybrid hub+spoke scenario. 
 
 ## Hub and Spoke Global Mesh
-In this next scenario, we are going to expand off the previosuly created Hub and Spoke and global mesh that with a new Hub and Spoke in a different regions (WestUS2 with EastUS2). So, we will have two hub and spokes globally peered cross region. We will add the new location and create the network group and add all the VMs including the previous hub and spoke to the new network group. Then, we will create the configuration, apply the configuration and test the connectivty and next hops.
+![image](https://user-images.githubusercontent.com/55964102/172461090-f0a35e6b-584c-489c-b908-5982c818fdb1.png)
+
