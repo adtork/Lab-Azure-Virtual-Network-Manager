@@ -3,15 +3,15 @@
 
 ## Introduction
 
-AVNM in a nutshell is the ability to quickly mangage networks at scale within a tenant or cross tenant. It gives you the ability to deploy, configure, group and manage networks at a thousand foot view. From there, you can tune the networks at a more granular view, and segment them based on your requirements. At the time of this writing, only certain regions are available for AVNM. More info and public article can be found here: https://docs.microsoft.com/en-us/azure/virtual-network-manager/overview
+AVNM in a nutshell is the ability to quickly mangage networks at scale within a tenant or cross tenant. It gives you the ability to deploy, configure, group and manage networks at a thousand foot view. From there, you can tune the networks at a more granular view, and segment them based on your requirements. At the time of this writing, only certain regions are available for AVNM. The Powershell commands are also not complete the time fo this lab. Thus, this lab has been doing in CLI. More info and public article can be found here: https://docs.microsoft.com/en-us/azure/virtual-network-manager/overview
 
 ## Goals
 
-The goal of this Microhack is to step through some of the common configuration scnearios that AVNM provides and see how that affects not only the topology behavior, but also security and resources inside those VNETs. This Microhack will continue to be updated as more scenarios become available. The username for all vms is azureuser and passowrd is MyP@SSword123! The lab does not cover enabling serial console to test connectivity between VMs.  We will start off with stepping through three scenarios:
+The goal of this Microhack is to step through some of the common configuration scnearios that AVNM provides and see how that affects not only the topology behavior, and explore how that changes routing and connectivty.This Microhack will continue to be updated as more scenarios become available. The username for all vms is azureuser and passowrd is MyP@SSword123! The lab does not cover enabling serial console to test connectivity between VMs.  We will start off with stepping through three configuration scenarios:
 
-1. Mesh Configuration
-2. Hub+Spoke Configuration and seperating that out with connected groups
-3. Hub+Spoke Global Mesh Configuration
+1. Mesh Configuration -single region
+2. Hub+Spoke Configuration and seperating that out with connected groups -single region
+3. Hub+Spoke Global Mesh Configuration -multi region
 
 ## Mesh Configuration
 
