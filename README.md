@@ -14,6 +14,7 @@ The goal of this Microhack is to step through some of the common configuration s
 3. Hub+Spoke Global Mesh Configuration
 
 ## Mesh Configuration
+In this config, we are going to create a simple mesh topology where every VNET can talk. The VMs will have direct connecitvty to each other and we will explore the next hops and test the connectivity amongst the mesh.
 
 ![Mesh Topology](https://user-images.githubusercontent.com/55964102/170347376-dbe813ab-3e5a-48dd-8ea2-730a80cc16c0.png)
 
