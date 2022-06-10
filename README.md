@@ -286,12 +286,47 @@ From this Hub and Spoke section, we can see that we were able to create a bi-dir
 ## Commands
 
 ```bash
-#In this section, since we are doing a global Mesh, we will reference EastUS2 region. This assumes the previous resources are still created from prior sections in WUS2. We are are going to peer the Hub+Spoke in WUS2 from the new Hub+Spoke via EUS2 and global mesh them.
+#In this section, since we are doing a global Mesh, we will reference EastUS2 region. This assumes the previous resources are still created from previous sections in WUS2. We are are going to peer the Hub+Spoke in WUS2 from the new Hub+Spoke via EUS2 and global mesh them.
+
 rg=avnm-lab-microhack
-loc=eastus2 #creating new region for global mesh
+loc=westus2
+loc2=eastus2 #creating new region for global mesh
 avnmname=myavnm
-avnmnetgroup=myavnmgroup
 
 #Create the new Network Group for Global Mesh. Global Mesh requires all VNETs to be in the same net group
+az network manager group create --name avnmnetgroupglobalmesh \
+    --network-manager-name $avnmname \
+    --description "Global Mesh Hub+Spoke" \
+    --display-name avnmnetgroupglobalmesh \
+    --member-type "Microsoft.Network/virtualNetworks" \
+    --resource-group $rg \
+    --output none
+    
+#Create the new VNETs for eastus2 Hub+Spoke
+az network vnet create --address-prefixes 172.16.11.0/24 -n vnetL -g $rg -l $loc2 --subnet-name default --subnet-prefixes 172.16.11.0/27 --output none
+az network vnet create --address-prefixes 172.16.12.0/24 -n vnetM -g $rg -l $loc2 --subnet-name default --subnet-prefixes 172.16.12.0/27 --output none
+az network vnet create --address-prefixes 172.16.13.0/24 -n vnetN -g $rg -l $loc2 --subnet-name default --subnet-prefixes 172.16.13.0/27 --output none
+az network vnet create --address-prefixes 172.16.14.0/24 -n vnetO -g $rg -l $loc2 --subnet-name default --subnet-prefixes 172.16.14.0/27 --output none
+az network vnet create --address-prefixes 172.16.15.0/24 -n vnetP -g $rg -l $loc2 --subnet-name default --subnet-prefixes 172.16.15.0/27 --output none
+
+#Add our static VNETs to the network group
+vnetL=$(az network vnet show -g $rg -n vnetH --query id -o tsv) #repeat same steps for vnetM-vnetP
+az network manager group static-member create --network-group-name hubspoke \
+    --network-manager-name $avnmname \
+    --resource-group $rg \
+    --static-member-name "vnetL" \
+    --resource-id=$vnetL \
+    --output none
+    
+#Create the config for EUS2 Hub+Spoke
+
+
+#Create the config for Global Mesh EUS2
+
+
+#Apply the config to both referencing both regions 
+
+
+
 
 
