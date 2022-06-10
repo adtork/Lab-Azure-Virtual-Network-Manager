@@ -311,7 +311,7 @@ az network vnet create --address-prefixes 172.16.15.0/24 -n vnetP -g $rg -l $loc
 
 #Add our static VNETs to the network group
 vnetL=$(az network vnet show -g $rg -n vnetH --query id -o tsv) #repeat same steps for vnetM-vnetP
-az network manager group static-member create --network-group-name hubspoke \
+az network manager group static-member create --network-group-name avnmnetgroupglobalmesh \
     --network-manager-name $avnmname \
     --resource-group $rg \
     --static-member-name "vnetL" \
