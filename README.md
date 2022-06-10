@@ -283,3 +283,15 @@ From this Hub and Spoke section, we can see that we were able to create a bi-dir
 ## Hub and Spoke Global Mesh
 ![image](https://user-images.githubusercontent.com/55964102/172461090-f0a35e6b-584c-489c-b908-5982c818fdb1.png)
 
+## Commands
+
+```bash
+#In this section, since we are doing a global Mesh, we will reference EastUS2 region. This assumes the previous resources are still created from prior sections in WUS2. We are are going to peer the Hub+Spoke in WUS2 from the new Hub+Spoke via EUS2 and global mesh them.
+rg=avnm-lab-microhack
+loc=eastus2 #creating new region for global mesh
+avnmname=myavnm
+avnmnetgroup=myavnmgroup
+
+#Create the new Network Group for Global Mesh. Global Mesh requires all VNETs to be in the same net group
+
+
