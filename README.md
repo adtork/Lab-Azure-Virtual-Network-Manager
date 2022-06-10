@@ -281,7 +281,8 @@ az vm create -n vnetKVM  -g $rg --image ubuntults --public-ip-sku Standard --siz
 From this Hub and Spoke section, we can see that we were able to create a bi-diretional peering with Vnets (H and I) and direct mesh peering with Vnets (J and K). Vnet G in this scenario is our hub. For Vnets H and I, those are bi directionaly peered to our hub VNET and those VMs can only ping the hub VM, but not each other since they are non-connected group. For Vnets J and K, since those are part of the connected group, those VMs can ping each other and also ping the hub VM. When we check the next hop affected routes on our VMs, we can see VMs H and I have "Vnet peering" listed as next hop, and VMs J and K have "conneted group", which matches our topology. For VMG, that has peering to all the Vnets in question since its our hub. For the next section, we are going to explore a hybrid hub+spoke scenario. 
 
 ## Hub and Spoke Global Mesh
-![image](https://user-images.githubusercontent.com/55964102/172461090-f0a35e6b-584c-489c-b908-5982c818fdb1.png)
+![image](https://user-images.githubusercontent.com/55964102/173162772-484fcaf4-a9c5-4dbe-a6e5-6d8424109b4d.png)
+
 
 ## Commands
 
@@ -289,11 +290,10 @@ From this Hub and Spoke section, we can see that we were able to create a bi-dir
 #In this section, since we are doing a global Mesh, we will reference EastUS2 region. This assumes the previous resources are still created from previous sections in WUS2. We are are going to peer the Hub+Spoke in WUS2 from the new Hub+Spoke via EUS2 and global mesh them.
 
 rg=avnm-lab-microhack
-loc=westus2
 loc2=eastus2 #creating new region for global mesh
 avnmname=myavnm
 
-#Create the new Network Manager for Global Mesh. Global Mesh requires all VNETs to be in the same net group
+#Create the new Network Manager for Global Mesh. Global Mesh requires all VNETs to be in the same network group
 az network manager group create --name avnmnetgroupglobalmesh \
     --network-manager-name $avnmname \
     --description "Global Mesh Hub+Spoke" \
@@ -302,30 +302,57 @@ az network manager group create --name avnmnetgroupglobalmesh \
     --resource-group $rg \
     --output none
     
-#Create the new VNETs for EUS2 Hub+Spoke
+#Create the new VNETs in EUS2 for Global Mesh
 az network vnet create --address-prefixes 172.16.11.0/24 -n vnetL -g $rg -l $loc2 --subnet-name default --subnet-prefixes 172.16.11.0/27 --output none
 az network vnet create --address-prefixes 172.16.12.0/24 -n vnetM -g $rg -l $loc2 --subnet-name default --subnet-prefixes 172.16.12.0/27 --output none
 az network vnet create --address-prefixes 172.16.13.0/24 -n vnetN -g $rg -l $loc2 --subnet-name default --subnet-prefixes 172.16.13.0/27 --output none
 az network vnet create --address-prefixes 172.16.14.0/24 -n vnetO -g $rg -l $loc2 --subnet-name default --subnet-prefixes 172.16.14.0/27 --output none
 az network vnet create --address-prefixes 172.16.15.0/24 -n vnetP -g $rg -l $loc2 --subnet-name default --subnet-prefixes 172.16.15.0/27 --output none
 
-#Add our static VNETs to the network group
-vnetL=$(az network vnet show -g $rg -n vnetH --query id -o tsv) #repeat same steps for vnetM-vnetP
+#Add our static VNETs to the new network group, this includes previous vnets from WUS2 spoke as well
+vnetG=$(az network vnet show -g $rg -n vnetG --query id -o tsv) #repeat same steps for vnetH-vnetP
 az network manager group static-member create --network-group-name avnmnetgroupglobalmesh \
     --network-manager-name $avnmname \
     --resource-group $rg \
-    --static-member-name "vnetL" \
-    --resource-id=$vnetL \
+    --static-member-name "vnetG" \
+    --resource-id=$vnetG \
     --output none
     
-#Create the config for EUS2 Hub+Spoke
+#Create the config for EUS2 GlobalMesh
+hubVnetglobal=$(az network vnet show -g $rg -n vnetL --query 'id' -o tsv) #This time, we will make vnetL the hub VNET
+groupid=$(az network manager group show --network-group-name "avnmnetgroupglobalmesh" --network-manager-name $avnmname --resource-group $rg --query 'id' -o tsv)
+az network manager connect-config create --configuration-name "HubSpokeGlobalMesh" \
+    --description "avnm hub+spoke globalmesh" \
+    --applies-to-groups group-Connectivity=DirectlyConnected network-group-id=$groupid
+    --connectivity-topology "HubAndSpoke" \
+    --display-name "Hub+Spoke globalmesh" \
+    --hub resource-id=$hubVnetglobal resource-type="Microsoft.Network/virtualNetworks" \
+    --network-manager-name $avnmname \
+    --resource-group $rg \
+    --is-global true
+    --output none
 
+#Apply the config for globalmesh
+confglobalmesh=$(az network manager connect-config show --configuration-name 'HubSpokeGlobalMesh' -g $rg -n $avnmname --query 'id' -o tsv)
+subid=$(az account show --query 'id' -o tsv)
+url='https://management.azure.com/subscriptions/'$subid'/resourceGroups/'$rg'/providers/Microsoft.Network/networkManagers/'$avnmname'/commit?api-version=2021-02-01-preview'
+json='{
+  "targetLocations": [
+    "'$loc2'"
+  ],
+  "configurationIds": [
+    "'$confglobalmesh'"![image](https://user-images.githubusercontent.com/55964102/173162403-a904b101-ca04-4353-b9b1-eb3c4c3ebde9.png)
+![image](https://user-images.githubusercontent.com/55964102/173162422-3ca20d53-3fea-43f8-ae07-7d62f769a19d.png)
+![image](https://user-images.githubusercontent.com/55964102/173162430-35ea98ce-3786-4160-ae99-e9470d4dee48.png)
 
-#Create the config for Global Mesh EUS2
+  ],
+  "commitType": "Connectivity"
+}'
 
-
-#Apply the config to both referencing both regions 
-
+az rest --method POST \
+    --url $url \
+    --body "$json" \
+    --output none
 
 
 
