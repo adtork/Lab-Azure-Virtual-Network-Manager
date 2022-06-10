@@ -293,7 +293,7 @@ loc=westus2
 loc2=eastus2 #creating new region for global mesh
 avnmname=myavnm
 
-#Create the new Network Group for Global Mesh. Global Mesh requires all VNETs to be in the same net group
+#Create the new Network Manager for Global Mesh. Global Mesh requires all VNETs to be in the same net group
 az network manager group create --name avnmnetgroupglobalmesh \
     --network-manager-name $avnmname \
     --description "Global Mesh Hub+Spoke" \
@@ -302,7 +302,7 @@ az network manager group create --name avnmnetgroupglobalmesh \
     --resource-group $rg \
     --output none
     
-#Create the new VNETs for eastus2 Hub+Spoke
+#Create the new VNETs for EUS2 Hub+Spoke
 az network vnet create --address-prefixes 172.16.11.0/24 -n vnetL -g $rg -l $loc2 --subnet-name default --subnet-prefixes 172.16.11.0/27 --output none
 az network vnet create --address-prefixes 172.16.12.0/24 -n vnetM -g $rg -l $loc2 --subnet-name default --subnet-prefixes 172.16.12.0/27 --output none
 az network vnet create --address-prefixes 172.16.13.0/24 -n vnetN -g $rg -l $loc2 --subnet-name default --subnet-prefixes 172.16.13.0/27 --output none
