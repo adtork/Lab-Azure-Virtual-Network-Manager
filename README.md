@@ -293,6 +293,7 @@ From this Hub and Spoke section, we can see that we were able to create a bi-dir
 #In this section, since we are doing a global Mesh, we will reference EastUS2 region. This assumes the previous resources are still created from previous sections in WUS2. We are are going to peer the Hub+Spoke in WUS2 from the new Hub+Spoke via EUS2 and global mesh them.
 
 rg=avnm-lab-microhack
+loc=westus2
 loc2=eastus2 #creating new region for global mesh config
 avnmname=myavnm
 vmsize=Standard_D2_v2
@@ -338,13 +339,14 @@ az network manager connect-config create --configuration-name "HubSpokeGlobalMes
     --resource-group $rg \
     --output none
 
-#Apply the config for globalmesh
+#Apply the config for globalmesh in both regions
 confglobalmesh=$(az network manager connect-config show --configuration-name 'HubSpokeGlobalMesh' -g $rg -n $avnmname --query 'id' -o tsv)
 subid=$(az account show --query 'id' -o tsv)
 url='https://management.azure.com/subscriptions/'$subid'/resourceGroups/'$rg'/providers/Microsoft.Network/networkManagers/'$avnmname'/commit?api-version=2021-02-01-preview'
 json='{
   "targetLocations": [
-    "'$loc2'"
+    "'$loc2'",
+    "'$loc'"
   ],
   "configurationIds": [
     "'$confglobalmesh'"
