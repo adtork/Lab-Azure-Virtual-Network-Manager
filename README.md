@@ -283,7 +283,8 @@ az vm create -n vnetKVM  -g $rg --image ubuntults --public-ip-sku Standard --siz
 From this Hub and Spoke section, we can see that we were able to create a bi-diretional peering with Vnets (H and I) and direct mesh peering with Vnets (J and K). Vnet G in this scenario is our hub. For Vnets H and I, those are bi directionaly peered to our hub VNET and those VMs can only ping the hub VM, but not each other since they are non-connected group. For Vnets J and K, since those are part of the connected group, those VMs can ping each other and also ping the hub VM. When we check the next hop affected routes on our VMs, we can see VMs H and I have "Vnet peering" listed as next hop, and VMs J and K have "conneted group", which matches our topology. For VMG, that has peering to all the Vnets in question since its our hub. For the next section, we are going to explore a hybrid hub+spoke scenario. 
 
 ## Hub and Spoke Global Mesh
-![image](https://user-images.githubusercontent.com/55964102/173162772-484fcaf4-a9c5-4dbe-a6e5-6d8424109b4d.png)
+![image](https://user-images.githubusercontent.com/55964102/173166583-35b70a85-176c-4a87-86d9-ceed1b06653f.png)
+
 
 
 ## Commands
