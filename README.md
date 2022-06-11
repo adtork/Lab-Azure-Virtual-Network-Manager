@@ -358,11 +358,11 @@ az rest --method POST \
     --output none
     
 #Deploy the VMs in new VNETs for EUS2
-az vm create -n vnetLVM  -g $rg --image ubuntults --public-ip-sku Standard --size $vmsize -l $loc --subnet default --vnet-name vnetL --admin-username $username --admin-password $password --no-wait
-az vm create -n vnetMVM  -g $rg --image ubuntults --public-ip-sku Standard --size $vmsize -l $loc --subnet default --vnet-name vnetM --admin-username $username --admin-password $password --no-wait
-az vm create -n vnetNVM  -g $rg --image ubuntults --public-ip-sku Standard --size $vmsize -l $loc --subnet default --vnet-name vnetN --admin-username $username --admin-password $password --no-wait
-az vm create -n vnetOVM  -g $rg --image ubuntults --public-ip-sku Standard --size $vmsize -l $loc --subnet default --vnet-name vnetO --admin-username $username --admin-password $password --no-wait
-az vm create -n vnetPVM  -g $rg --image ubuntults --public-ip-sku Standard --size $vmsize -l $loc --subnet default --vnet-name vnetP --admin-username $username --admin-password $password --no-wait
+az vm create -n vnetLVM  -g $rg --image ubuntults --public-ip-sku Standard --size $vmsize -l $loc2 --subnet default --vnet-name vnetL --admin-username $username --admin-password $password --no-wait
+az vm create -n vnetMVM  -g $rg --image ubuntults --public-ip-sku Standard --size $vmsize -l $loc2 --subnet default --vnet-name vnetM --admin-username $username --admin-password $password --no-wait
+az vm create -n vnetNVM  -g $rg --image ubuntults --public-ip-sku Standard --size $vmsize -l $loc2 --subnet default --vnet-name vnetN --admin-username $username --admin-password $password --no-wait
+az vm create -n vnetOVM  -g $rg --image ubuntults --public-ip-sku Standard --size $vmsize -l $loc2 --subnet default --vnet-name vnetO --admin-username $username --admin-password $password --no-wait
+az vm create -n vnetPVM  -g $rg --image ubuntults --public-ip-sku Standard --size $vmsize -l $loc2 --subnet default --vnet-name vnetP --admin-username $username --admin-password $password --no-wait
 
 
 
