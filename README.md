@@ -26,6 +26,9 @@ loc=westus2
 avnmname=myavnm
 avnmnetgroup=myavnmgroup
 subid=$(az account show --query 'id' -o tsv)
+vmsize=Standard_D2_v2
+username=azureuser
+password="MyP@SSword123!"
 
 #List current default subscription you want to use for AVNM
 az account show --query id --output tsv
@@ -103,10 +106,6 @@ az rest --method POST \
 #Create the VMs in each VNET
 #Once created enable serial console on each VM to test connectivity between each.
 
-vmsize=Standard_D2_v2
-username=azureuser
-password="MyP@SSword123!"
-
 az vm create -n vnetaVM  -g $rg --image ubuntults --public-ip-sku Standard --size $vmsize -l $loc --subnet default --vnet-name vneta --admin-username $username --admin-password $password --no-wait
 az vm create -n vnetbVM  -g $rg --image ubuntults --public-ip-sku Standard --size $vmsize -l $loc --subnet default --vnet-name vnetb --admin-username $username --admin-password $password --no-wait
 az vm create -n vnetcVM  -g $rg --image ubuntults --public-ip-sku Standard --size $vmsize -l $loc --subnet default --vnet-name vnetc --admin-username $username --admin-password $password --no-wait
@@ -176,6 +175,9 @@ rg=avnm-lab-microhack
 loc=westus2
 avnmname=myavnm
 avnmnetgroup=myavnmgroup
+vmsize=Standard_D2_v2
+username=azureuser
+password="MyP@SSword123!"
 
 #Create the network manager in Hub+Spoke for connected group, aka connected mesh
 az network manager group create --name "hubspokedirect" \
@@ -290,8 +292,11 @@ From this Hub and Spoke section, we can see that we were able to create a bi-dir
 #In this section, since we are doing a global Mesh, we will reference EastUS2 region. This assumes the previous resources are still created from previous sections in WUS2. We are are going to peer the Hub+Spoke in WUS2 from the new Hub+Spoke via EUS2 and global mesh them.
 
 rg=avnm-lab-microhack
-loc2=eastus2 #creating new region for global mesh
+loc2=eastus2 #creating new region for global mesh config
 avnmname=myavnm
+vmsize=Standard_D2_v2
+username=azureuser
+password="MyP@SSword123!"
 
 #Create the new Network Manager for Global Mesh. Global Mesh requires all VNETs to be in the same network group
 az network manager group create --name avnmnetgroupglobalmesh \
@@ -323,13 +328,13 @@ hubVnetglobal=$(az network vnet show -g $rg -n vnetL --query 'id' -o tsv) #This 
 groupid=$(az network manager group show --network-group-name "avnmnetgroupglobalmesh" --network-manager-name $avnmname --resource-group $rg --query 'id' -o tsv)
 az network manager connect-config create --configuration-name "HubSpokeGlobalMesh" \
     --description "avnm hub+spoke globalmesh" \
-    --applies-to-groups group-Connectivity=DirectlyConnected network-group-id=$groupid
+    --applies-to-groups group-Connectivity=DirectlyConnected is-global=true network-group-id=$groupid
     --connectivity-topology "HubAndSpoke" \
     --display-name "Hub+Spoke globalmesh" \
+    --delete-existing-peering true \
     --hub resource-id=$hubVnetglobal resource-type="Microsoft.Network/virtualNetworks" \
     --network-manager-name $avnmname \
     --resource-group $rg \
-    --is-global true
     --output none
 
 #Apply the config for globalmesh
@@ -341,10 +346,7 @@ json='{
     "'$loc2'"
   ],
   "configurationIds": [
-    "'$confglobalmesh'"![image](https://user-images.githubusercontent.com/55964102/173162403-a904b101-ca04-4353-b9b1-eb3c4c3ebde9.png)
-![image](https://user-images.githubusercontent.com/55964102/173162422-3ca20d53-3fea-43f8-ae07-7d62f769a19d.png)
-![image](https://user-images.githubusercontent.com/55964102/173162430-35ea98ce-3786-4160-ae99-e9470d4dee48.png)
-
+    "'$confglobalmesh'"
   ],
   "commitType": "Connectivity"
 }'
@@ -353,6 +355,13 @@ az rest --method POST \
     --url $url \
     --body "$json" \
     --output none
+    
+#Deploy the VMs in new VNETs for EUS2
+az vm create -n vnetLVM  -g $rg --image ubuntults --public-ip-sku Standard --size $vmsize -l $loc --subnet default --vnet-name vnetL --admin-username $username --admin-password $password --no-wait
+az vm create -n vnetMVM  -g $rg --image ubuntults --public-ip-sku Standard --size $vmsize -l $loc --subnet default --vnet-name vnetM --admin-username $username --admin-password $password --no-wait
+az vm create -n vnetNVM  -g $rg --image ubuntults --public-ip-sku Standard --size $vmsize -l $loc --subnet default --vnet-name vnetN --admin-username $username --admin-password $password --no-wait
+az vm create -n vnetOVM  -g $rg --image ubuntults --public-ip-sku Standard --size $vmsize -l $loc --subnet default --vnet-name vnetO --admin-username $username --admin-password $password --no-wait
+az vm create -n vnetPVM  -g $rg --image ubuntults --public-ip-sku Standard --size $vmsize -l $loc --subnet default --vnet-name vnetP --admin-username $username --admin-password $password --no-wait
 
 
 
