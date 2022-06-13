@@ -365,7 +365,9 @@ az vm create -n vnetMVM  -g $rg --image ubuntults --public-ip-sku Standard --siz
 az vm create -n vnetNVM  -g $rg --image ubuntults --public-ip-sku Standard --size $vmsize -l $loc2 --subnet default --vnet-name vnetN --admin-username $username --admin-password $password --no-wait
 az vm create -n vnetOVM  -g $rg --image ubuntults --public-ip-sku Standard --size $vmsize -l $loc2 --subnet default --vnet-name vnetO --admin-username $username --admin-password $password --no-wait
 az vm create -n vnetPVM  -g $rg --image ubuntults --public-ip-sku Standard --size $vmsize -l $loc2 --subnet default --vnet-name vnetP --admin-username $username --admin-password $password --no-wait
+```
 
-
+## Conclusion
+We can see after enabling global reach and adding all our VNETs to the hub and spoke, we can ping cross region from EUS2 to WUS2. The VMs in WUS2 show connected group as next hop and the VMs in EUS2 show VNET peering. In the configuration we applied we did both locations and disabled previous peerings. This lab demonstrated three basic connectivity scenarios for grouping VNETs.
 
 
