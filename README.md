@@ -368,6 +368,6 @@ az vm create -n vnetPVM  -g $rg --image ubuntults --public-ip-sku Standard --siz
 ```
 
 ## Conclusion
-We can see after enabling global reach and adding all our VNETs to the hub and spoke, we can ping cross region from EUS2 to WUS2. The VMs in WUS2 show connected group as next hop and the VMs in EUS2 show VNET peering. In the configuration we applied we did both locations and disabled previous peerings. This lab demonstrated three basic connectivity scenarios for grouping VNET using AVNM and managing them based on basic topplogies. 
+We can see after enabling global mesh and adding all our VNETs to the hub and spoke, we can ping cross region from EUS2 to WUS2 and vice versa. The VMs in WUS2 show connected group as next hop and the VMs in EUS2 show VNET peering. We applied our configuration to both regions. We can see from this lab that AVNM provides basic options for grouping VNETs based on your connectivity requiremnets. In larger scale environments this would be especially useful to quickly apply toplogy configs to group resources on requirements.  
 
 
