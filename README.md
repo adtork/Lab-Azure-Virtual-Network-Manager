@@ -7,7 +7,7 @@ AVNM in a nutshell is the ability to quickly mangage networks at scale within a 
 
 ## Goals
 
-The goal of this lab is to step through some of the common configuration scnearios that AVNM provides and see how that affects not only the topology behavior, and explore how that changes routing and connectivty.This Microhack will continue to be updated as more scenarios become available. The username for all vms is azureuser and passowrd is MyP@SSword123! The lab does not cover enabling serial console to test connectivity between VMs.  We will start off with stepping through three configuration scenarios:
+The goal of this lab is to step through some of the common configuration scenarios that AVNM provides and see how that affects not only the topology behavior, and explore how that changes routing and connectivty.This Microhack will continue to be updated as more scenarios become available. The username for all vms is azureuser and passowrd is MyP@SSword123! The lab does not cover enabling serial console to test connectivity between VMs.  We will start off with stepping through three configuration scenarios:
 
 1. Mesh Configuration -single region
 2. Hub+Spoke Configuration and seperating that out with connected groups -single region
