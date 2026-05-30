@@ -1,0 +1,6 @@
+.env
+*.log
+.vscode/
+.idea/
+*.tfstate*
+.DS_Store

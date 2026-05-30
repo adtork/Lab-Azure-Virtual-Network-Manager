@@ -1,5 +1,25 @@
-## Lab: Azure-Virtual-Network-Manager
+# Lab: Azure Virtual Network Manager
 
+![Azure](https://img.shields.io/badge/Azure-Virtual%20Network%20Manager-0078D4?logo=microsoftazure&logoColor=white)
+![Bash](https://img.shields.io/badge/Scripts-Bash-4EAA25?logo=gnubash&logoColor=white)
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+![Lab Status](https://img.shields.io/badge/Lab%20Status-Ready-brightgreen)
+
+A hands-on Azure Virtual Network Manager (AVNM) lab for building mesh, hub-and-spoke, and hybrid global mesh connectivity topologies.
+
+## Table of Contents
+
+- [🎯 Lab Objectives](#-lab-objectives)
+- [🗺️ Topologies](#️-topologies)
+- [📋 Prerequisites](#-prerequisites)
+- [⚙️ Parameters](#️-parameters)
+- [🚀 Quick Start](#-quick-start)
+- [📜 Step-by-step commands](#-step-by-step-commands)
+- [✅ Validation](#-validation)
+- [🧹 Cleanup](#-cleanup)
+- [💡 Key Takeaways](#-key-takeaways)
+- [📚 References](#-references)
+- [📄 License](#-license)
 
 ## Introduction
 
@@ -13,9 +33,161 @@ The goal of this lab is to step through some of the common configuration scenari
 2. Hub+Spoke Configuration and seperating that out with connected groups -single region
 3. Hub+Spoke Global Mesh Configuration -multi region
 
-## Mesh Configuration
+## 🎯 Lab Objectives
+
+Explore three Azure Virtual Network Manager connectivity scenarios:
+
+1. **Mesh** — VNets A-F connected through a direct mesh in one region.
+2. **Hub and Spoke** — hub VNet G with spokes H/I using hub transit only and spokes J/K in a directly connected group.
+3. **Hub and Spoke + Global Mesh** — the hub-and-spoke design extended across regions with a global mesh configuration.
+
+## 🗺️ Topologies
+
+### Mesh Configuration
 
 ![Mesh Topology](https://user-images.githubusercontent.com/55964102/170347376-dbe813ab-3e5a-48dd-8ea2-730a80cc16c0.png)
+
+```mermaid
+flowchart LR
+    A[vneta / VNet A]
+    B[vnetb / VNet B]
+    C[vnetc / VNet C]
+    D[vnetd / VNet D]
+    E[vnete / VNet E]
+    F[vnetf / VNet F]
+
+    A --- B
+    A --- C
+    A --- D
+    A --- E
+    A --- F
+    B --- C
+    B --- D
+    B --- E
+    B --- F
+    C --- D
+    C --- E
+    C --- F
+    D --- E
+    D --- F
+    E --- F
+```
+
+### Hub and Spoke Configuration
+
+![Hub and Spoke Topology](https://user-images.githubusercontent.com/55964102/171702994-0ea3d8c6-1033-4285-95d6-bb16911a0116.png)
+
+```mermaid
+flowchart TB
+    G((vnetG / Hub))
+    H[vnetH / Spoke - non-connected]
+    I[vnetI / Spoke - non-connected]
+    J[vnetJ / Spoke - connected group]
+    K[vnetK / Spoke - connected group]
+
+    H <--> G
+    I <--> G
+    J <--> G
+    K <--> G
+    J <--> K
+```
+
+### Hub and Spoke + Global Mesh
+
+![Hub and Spoke Global Mesh Topology](https://user-images.githubusercontent.com/55964102/173166583-35b70a85-176c-4a87-86d9-ceed1b06653f.png)
+
+```mermaid
+flowchart LR
+    subgraph WUS2[West US 2]
+        G((vnetG / Hub))
+        H[vnetH]
+        I[vnetI]
+        J[vnetJ]
+        K[vnetK]
+        H <--> G
+        I <--> G
+        J <--> G
+        K <--> G
+        J <--> K
+    end
+
+    subgraph EUS2[East US 2]
+        L((vnetL / Hub))
+        M[vnetM]
+        N[vnetN]
+        O[vnetO]
+        P[vnetP]
+        M <--> L
+        N <--> L
+        O <--> L
+        P <--> L
+        M --- N
+        M --- O
+        M --- P
+        N --- O
+        N --- P
+        O --- P
+    end
+
+    G <-->|Global mesh| L
+    H -.- M
+    I -.- N
+    J -.- O
+    K -.- P
+```
+
+## 📋 Prerequisites
+
+- Azure CLI **2.50 or later**
+- Azure Virtual Network Manager CLI extension:
+
+  ```bash
+  az extension add --name virtual-network-manager
+  ```
+
+- An Azure subscription where you can create VNets, VMs, peerings, and Network Manager resources
+- Estimated cost: **~$5/day** while VMs and networking resources are running
+- Run `az login` before executing scripts
+
+## ⚙️ Parameters
+
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `RG` | `avnm-lab-microhack` | Resource group used by all scenarios |
+| `LOC` | `westus2` | Primary region for mesh and hub-and-spoke scenarios |
+| `LOC2` | `eastus2` | Secondary region for global mesh scenario |
+| `AVNM_NAME` | `myavnm` | Azure Virtual Network Manager name |
+| `AVNM_GROUP` | `myavnmgroup` | Mesh network group name |
+| `VM_SIZE` | `Standard_D2_v2` | VM size used for test VMs |
+| `USERNAME` | `azureuser` | VM admin username |
+| `PASSWORD` | `MyP@SSword123!` | Lab VM password; override for real usage |
+
+## 🚀 Quick Start
+
+```bash
+az login
+az extension add --name virtual-network-manager
+```
+
+Run the scenarios independently or in sequence:
+
+```bash
+# 1. Mesh: vneta-vnetf
+bash scripts/01-mesh.sh
+
+# 2. Hub and spoke: vnetG-vnetK
+bash scripts/02-hub-and-spoke.sh
+
+# 3. Hub and spoke + global mesh: vnetG-vnetP across West US 2 and East US 2
+bash scripts/03-hub-spoke-global-mesh.sh
+```
+
+## 📜 Step-by-step commands
+
+The original lab commands are preserved below verbatim in collapsible sections.
+
+<details>
+<summary><strong>Mesh Configuration original commands</strong></summary>
 
 ## Commands
 
@@ -158,13 +330,11 @@ PING 172.16.2.4 (172.16.2.4) 56(84) bytes of data.
 64 bytes from 172.16.2.4: icmp_seq=3 ttl=64 time=1.07 ms
 64 bytes from 172.16.2.4: icmp_seq=4 ttl=64 time=0.953 ms
 ```
-                             
-## Conclusion
-We can see creating a mesh with AVNM with our six VNETs, we were able to logically group them, apply connectivty and security policy and ping the VMs as if they were peered directly using VNET peering. As we checked via CLI or the UI, there is actually no peering listed direcly on the Vnets. We can also see, AVNM creates a new next hop type as "connectedgroup" which is a new next hop type for this Azure service. Under the hood, there is likely Vnet peering here that is not displayed in the portal.
 
-## Hub and Spoke Configuration
-![image](https://user-images.githubusercontent.com/55964102/171702994-0ea3d8c6-1033-4285-95d6-bb16911a0116.png)
+</details>
 
+<details>
+<summary><strong>Hub and Spoke Configuration original commands</strong></summary>
 
 ## Commmands
 This section assumes you kept the resource group and AVNM instance previously from Mesh configuration. If you deleted, re-create those two services again. We will start off with creating the new network groups for Hub+Spoke for "directly connected" and bi directional peering. Then, we will add our new VNETs in question to each network group, followed by creating the configurations and applying the configuration. Finally, we will create the new VMs and test connectivity within the hub and spoke for directly connected and bi directional peered VMs and check the next hops.
@@ -279,13 +449,10 @@ az vm create -n vnetJVM  -g $rg --image ubuntults --public-ip-sku Standard --siz
 az vm create -n vnetKVM  -g $rg --image ubuntults --public-ip-sku Standard --size $vmsize -l $loc --subnet default --vnet-name vnetK --admin-username $username --admin-password $password --no-wait
 ```
 
-## Conclusion
-From this Hub and Spoke section, we can see that we were able to create a bi-diretional peering with Vnets (H and I) and direct mesh peering with Vnets (J and K). Vnet G in this scenario is our hub. For Vnets H and I, those are bi directionaly peered to our hub VNET and those VMs can only ping the hub VM, but not each other since they are non-connected group. For Vnets J and K, since those are part of the connected group, those VMs can ping each other and also ping the hub VM. When we check the next hop affected routes on our VMs, we can see VMs H and I have "Vnet peering" listed as next hop, and VMs J and K have "conneted group", which matches our topology. For VMG, that has peering to all the Vnets in question since its our hub. For the next section, we are going to explore a hybrid hub+spoke scenario. 
+</details>
 
-## Hub and Spoke Global Mesh
-![image](https://user-images.githubusercontent.com/55964102/173166583-35b70a85-176c-4a87-86d9-ceed1b06653f.png)
-
-
+<details>
+<summary><strong>Hub and Spoke + Global Mesh original commands</strong></summary>
 
 ## Commands
 
@@ -367,7 +534,54 @@ az vm create -n vnetOVM  -g $rg --image ubuntults --public-ip-sku Standard --siz
 az vm create -n vnetPVM  -g $rg --image ubuntults --public-ip-sku Standard --size $vmsize -l $loc2 --subnet default --vnet-name vnetP --admin-username $username --admin-password $password --no-wait
 ```
 
-## Conclusion
-We can see after enabling global mesh and adding all our VNETs to the hub and spoke, we can ping cross region from EUS2 to WUS2 and vice versa. The VMs in WUS2 show connected group as next hop and the VMs in EUS2 show VNET peering. We applied our configuration to both regions. We can see from this lab that AVNM provides basic options for grouping VNETs based on your connectivity requiremnets. In larger scale environments this would be especially useful to quickly apply toplogy configs to group resources on requirements.  
+</details>
 
+## ✅ Validation
 
+Run the read-only validation helper to list AVNM network groups, connectivity configurations, and effective VNet peerings:
+
+```bash
+bash scripts/verify.sh
+```
+
+You can also validate VM-to-VM connectivity from Azure Serial Console as described in the original commands.
+
+## 🧹 Cleanup
+
+Remove the lab resource group after you finish:
+
+```bash
+bash scripts/cleanup.sh
+```
+
+Set `CONFIRM_DELETE=true` to skip the prompt in automated cleanup:
+
+```bash
+CONFIRM_DELETE=true bash scripts/cleanup.sh
+```
+
+## 💡 Key Takeaways
+
+### Mesh Configuration
+
+We can see creating a mesh with AVNM with our six VNETs, we were able to logically group them, apply connectivty and security policy and ping the VMs as if they were peered directly using VNET peering. As we checked via CLI or the UI, there is actually no peering listed direcly on the Vnets. We can also see, AVNM creates a new next hop type as "connectedgroup" which is a new next hop type for this Azure service. Under the hood, there is likely Vnet peering here that is not displayed in the portal.
+
+### Hub and Spoke Configuration
+
+From this Hub and Spoke section, we can see that we were able to create a bi-diretional peering with Vnets (H and I) and direct mesh peering with Vnets (J and K). Vnet G in this scenario is our hub. For Vnets H and I, those are bi directionaly peered to our hub VNET and those VMs can only ping the hub VM, but not each other since they are non-connected group. For Vnets J and K, since those are part of the connected group, those VMs can ping each other and also ping the hub VM. When we check the next hop affected routes on our VMs, we can see VMs H and I have "Vnet peering" listed as next hop, and VMs J and K have "conneted group", which matches our topology. For VMG, that has peering to all the Vnets in question since its our hub. For the next section, we are going to explore a hybrid hub+spoke scenario.
+
+### Hub and Spoke + Global Mesh
+
+We can see after enabling global mesh and adding all our VNETs to the hub and spoke, we can ping cross region from EUS2 to WUS2 and vice versa. The VMs in WUS2 show connected group as next hop and the VMs in EUS2 show VNET peering. We applied our configuration to both regions. We can see from this lab that AVNM provides basic options for grouping VNETs based on your connectivity requiremnets. In larger scale environments this would be especially useful to quickly apply toplogy configs to group resources on requirements.
+
+## 📚 References
+
+- [Azure Virtual Network Manager overview](https://learn.microsoft.com/azure/virtual-network-manager/overview)
+- [Create a mesh network topology with Azure Virtual Network Manager](https://learn.microsoft.com/azure/virtual-network-manager/how-to-create-mesh-network)
+- [Create a hub-and-spoke topology with Azure Virtual Network Manager](https://learn.microsoft.com/azure/virtual-network-manager/how-to-create-hub-and-spoke)
+- [Azure Virtual Network Manager connectivity configurations](https://learn.microsoft.com/azure/virtual-network-manager/concept-connectivity-configuration)
+- [Azure CLI virtual-network-manager extension](https://learn.microsoft.com/cli/azure/network/manager)
+
+## 📄 License
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
